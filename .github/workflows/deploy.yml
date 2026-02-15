@@ -29,6 +29,8 @@ jobs:
 
       - name: Build
         run: bun run build
+        env:
+          VITE_BASE_PATH: /mandarina-holidays-web/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

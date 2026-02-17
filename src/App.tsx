@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Holidays from 'date-holidays';
 import {
   Autocomplete,
@@ -27,18 +27,35 @@ const LANGUAGE_OPTIONS = [
   { code: 'fr', label: 'Francais' }
 ];
 
-function startOfMonth(date) {
+interface Country {
+  code: string;
+  name: string;
+}
+
+interface Holiday {
+  date: string;
+  start: Date;
+  end: Date;
+  name: string;
+  type: string;
+  rule: string;
+  note?: string | null;
+  observance?: string | null;
+  wording?: string | null;
+}
+
+function startOfMonth(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
 
-function shiftMonth(date, amount) {
+function shiftMonth(date: Date, amount: number): Date {
   return new Date(date.getFullYear(), date.getMonth() + amount, 1);
 }
 
 function App() {
   const { t, i18n } = useTranslation();
   const hd = useMemo(() => new Holidays(), []);
-  const countries = useMemo(() => {
+  const countries: Country[] = useMemo(() => {
     const countryMap = hd.getCountries();
     return Object.entries(countryMap)
       .map(([code, name]) => ({ code, name }))
@@ -47,11 +64,11 @@ function App() {
 
   const defaultCountry = countries.find((country) => country.code === 'US')?.code ?? countries[0]?.code ?? '';
 
-  const [countryCode, setCountryCode] = useState(() => {
+  const [countryCode, setCountryCode] = useState<string>(() => {
     const storedCountry = localStorage.getItem('countryCode');
     return storedCountry || defaultCountry;
   });
-  const [monthDate, setMonthDate] = useState(startOfMonth(new Date()));
+  const [monthDate, setMonthDate] = useState<Date>(startOfMonth(new Date()));
   const activeLanguage = LANGUAGE_OPTIONS.some((option) => option.code === i18n.resolvedLanguage)
     ? i18n.resolvedLanguage
     : 'en';
@@ -82,18 +99,18 @@ function App() {
     [activeLanguage]
   );
 
-  const holidaysInMonth = useMemo(() => {
+  const holidaysInMonth: Holiday[] = useMemo(() => {
     if (!countryCode) return [];
 
     const countryHolidays = new Holidays(countryCode);
-    const allHolidays = countryHolidays.getHolidays(monthDate.getFullYear()) ?? [];
+    const allHolidays = countryHolidays.getHolidays(monthDate.getFullYear()) as Holiday[] ?? [];
 
     return allHolidays
-      .filter((holiday) => {
+      .filter((holiday: Holiday) => {
         const holidayDate = new Date(holiday.date);
         return holidayDate.getMonth() === monthDate.getMonth();
       })
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
+      .sort((a: Holiday, b: Holiday) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [countryCode, monthDate]);
 
   const countryName = countries.find((country) => country.code === countryCode)?.name ?? countryCode;

@@ -13,9 +13,13 @@ import {
   Paper,
   Select,
   Stack,
-  Typography
+  Typography,
+  IconButton
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { useTheme } from './ThemeContext';
 
 const LANGUAGE_OPTIONS = [
   { code: 'en', label: 'English' },
@@ -51,6 +55,8 @@ function App() {
   const activeLanguage = LANGUAGE_OPTIONS.some((option) => option.code === i18n.resolvedLanguage)
     ? i18n.resolvedLanguage
     : 'en';
+
+  const { mode, toggleTheme } = useTheme();
 
   useEffect(() => {
     localStorage.setItem('countryCode', countryCode);
@@ -106,22 +112,27 @@ function App() {
               {t('appTitle')}
             </Typography>
 
-            <FormControl size="small" sx={{ minWidth: 170 }}>
-              <InputLabel id="language-select-label">{t('language')}</InputLabel>
-              <Select
-                labelId="language-select-label"
-                id="language-select"
-                label={t('language')}
-                value={activeLanguage}
-                onChange={(event) => i18n.changeLanguage(event.target.value)}
-              >
-                {LANGUAGE_OPTIONS.map((language) => (
-                  <MenuItem key={language.code} value={language.code}>
-                    {language.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Stack direction="row" spacing={1} alignItems="center"> {/* New Stack for theme toggle and language */}
+              <IconButton onClick={toggleTheme} color="inherit">
+                {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+              </IconButton>
+              <FormControl size="small" sx={{ minWidth: 170 }}>
+                <InputLabel id="language-select-label">{t('language')}</InputLabel>
+                <Select
+                  labelId="language-select-label"
+                  id="language-select"
+                  label={t('language')}
+                  value={activeLanguage}
+                  onChange={(event) => i18n.changeLanguage(event.target.value)}
+                >
+                  {LANGUAGE_OPTIONS.map((language) => (
+                    <MenuItem key={language.code} value={language.code}>
+                      {language.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Stack>
           </Stack>
 
           <Autocomplete

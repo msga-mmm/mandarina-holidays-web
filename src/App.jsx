@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import Holidays from 'date-holidays';
 import {
   Autocomplete,
@@ -43,11 +43,18 @@ function App() {
 
   const defaultCountry = countries.find((country) => country.code === 'US')?.code ?? countries[0]?.code ?? '';
 
-  const [countryCode, setCountryCode] = useState(defaultCountry);
+  const [countryCode, setCountryCode] = useState(() => {
+    const storedCountry = localStorage.getItem('countryCode');
+    return storedCountry || defaultCountry;
+  });
   const [monthDate, setMonthDate] = useState(startOfMonth(new Date()));
   const activeLanguage = LANGUAGE_OPTIONS.some((option) => option.code === i18n.resolvedLanguage)
     ? i18n.resolvedLanguage
     : 'en';
+
+  useEffect(() => {
+    localStorage.setItem('countryCode', countryCode);
+  }, [countryCode]);
 
   const monthFormatter = useMemo(
     () =>

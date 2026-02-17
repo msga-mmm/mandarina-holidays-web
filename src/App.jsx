@@ -4,25 +4,24 @@ import {
   Autocomplete,
   Button,
   Container,
+  FormControl,
+  InputLabel,
   List,
   ListItem,
+  MenuItem,
   TextField,
   Paper,
+  Select,
   Stack,
   Typography
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
-const MONTH_FORMATTER = new Intl.DateTimeFormat(undefined, {
-  month: 'long',
-  year: 'numeric'
-});
-
-const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
-  weekday: 'short',
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric'
-});
+const LANGUAGE_OPTIONS = [
+  { code: 'en', label: 'English' },
+  { code: 'es', label: 'Español' },
+  { code: 'fr', label: 'Francais' }
+];
 
 function startOfMonth(date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -33,6 +32,7 @@ function shiftMonth(date, amount) {
 }
 
 function App() {
+  const { t, i18n } = useTranslation();
   const hd = useMemo(() => new Holidays(), []);
   const countries = useMemo(() => {
     const countryMap = hd.getCountries();
@@ -45,6 +45,29 @@ function App() {
 
   const [countryCode, setCountryCode] = useState(defaultCountry);
   const [monthDate, setMonthDate] = useState(startOfMonth(new Date()));
+  const activeLanguage = LANGUAGE_OPTIONS.some((option) => option.code === i18n.resolvedLanguage)
+    ? i18n.resolvedLanguage
+    : 'en';
+
+  const monthFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(activeLanguage, {
+        month: 'long',
+        year: 'numeric'
+      }),
+    [activeLanguage]
+  );
+
+  const dateFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(activeLanguage, {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }),
+    [activeLanguage]
+  );
 
   const holidaysInMonth = useMemo(() => {
     if (!countryCode) return [];
@@ -66,9 +89,33 @@ function App() {
     <Container maxWidth="md" sx={{ py: { xs: 3, sm: 5 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
         <Stack spacing={2}>
-          <Typography component="h1" variant="h4">
-            Mandarina Holidays Web
-          </Typography>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            alignItems={{ xs: 'stretch', sm: 'center' }}
+            justifyContent="space-between"
+            spacing={1}
+          >
+            <Typography component="h1" variant="h4">
+              {t('appTitle')}
+            </Typography>
+
+            <FormControl size="small" sx={{ minWidth: 170 }}>
+              <InputLabel id="language-select-label">{t('language')}</InputLabel>
+              <Select
+                labelId="language-select-label"
+                id="language-select"
+                label={t('language')}
+                value={activeLanguage}
+                onChange={(event) => i18n.changeLanguage(event.target.value)}
+              >
+                {LANGUAGE_OPTIONS.map((language) => (
+                  <MenuItem key={language.code} value={language.code}>
+                    {language.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
 
           <Autocomplete
             id="country-combobox"
@@ -77,7 +124,7 @@ function App() {
             onChange={(_, value) => setCountryCode(value?.code ?? '')}
             isOptionEqualToValue={(option, value) => option.code === value.code}
             getOptionLabel={(option) => `${option.name} (${option.code})`}
-            renderInput={(params) => <TextField {...params} label="Country" />}
+            renderInput={(params) => <TextField {...params} label={t('country')} />}
           />
 
           <Stack
@@ -90,22 +137,25 @@ function App() {
               variant="contained"
               onClick={() => setMonthDate((value) => shiftMonth(value, -1))}
             >
-              Previous
+              {t('previous')}
             </Button>
             <Typography component="strong" variant="h6" textAlign="center">
-              {MONTH_FORMATTER.format(monthDate)}
+              {monthFormatter.format(monthDate)}
             </Typography>
             <Button variant="contained" onClick={() => setMonthDate((value) => shiftMonth(value, 1))}>
-              Next
+              {t('next')}
             </Button>
           </Stack>
 
           <Typography component="h2" variant="h6">
-            {countryName} holidays in {MONTH_FORMATTER.format(monthDate)}
+            {t('holidaysInMonth', {
+              country: countryName,
+              month: monthFormatter.format(monthDate)
+            })}
           </Typography>
 
           {holidaysInMonth.length === 0 ? (
-            <Typography color="text.secondary">No holidays found for this month.</Typography>
+            <Typography color="text.secondary">{t('noHolidays')}</Typography>
           ) : (
             <List disablePadding>
               {holidaysInMonth.map((holiday) => (
@@ -119,7 +169,7 @@ function App() {
                   >
                     <Typography fontWeight={600}>{holiday.name}</Typography>
                     <Typography color="text.secondary" variant="body2">
-                      {DATE_FORMATTER.format(new Date(holiday.date))}
+                      {dateFormatter.format(new Date(holiday.date))}
                     </Typography>
                   </Stack>
                 </ListItem>

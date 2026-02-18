@@ -19,7 +19,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { useTheme } from './ThemeContext';
+import { useTheme } from './hooks/useTheme';
 
 const LANGUAGE_OPTIONS = [
   { code: 'en', label: 'English' },
@@ -62,14 +62,19 @@ function App() {
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [hd]);
 
-  const defaultCountry = countries.find((country) => country.code === 'US')?.code ?? countries[0]?.code ?? '';
+  const defaultCountry =
+    countries.find((country) => country.code === 'US')?.code ??
+    countries[0]?.code ??
+    '';
 
   const [countryCode, setCountryCode] = useState<string>(() => {
     const storedCountry = localStorage.getItem('countryCode');
     return storedCountry || defaultCountry;
   });
   const [monthDate, setMonthDate] = useState<Date>(startOfMonth(new Date()));
-  const activeLanguage = LANGUAGE_OPTIONS.some((option) => option.code === i18n.resolvedLanguage)
+  const activeLanguage = LANGUAGE_OPTIONS.some(
+    (option) => option.code === i18n.resolvedLanguage
+  )
     ? i18n.resolvedLanguage
     : 'en';
 
@@ -103,17 +108,23 @@ function App() {
     if (!countryCode) return [];
 
     const countryHolidays = new Holidays(countryCode);
-    const allHolidays = countryHolidays.getHolidays(monthDate.getFullYear()) as Holiday[] ?? [];
+    const allHolidays =
+      (countryHolidays.getHolidays(monthDate.getFullYear()) as Holiday[]) ?? [];
 
     return allHolidays
       .filter((holiday: Holiday) => {
         const holidayDate = new Date(holiday.date);
         return holidayDate.getMonth() === monthDate.getMonth();
       })
-      .sort((a: Holiday, b: Holiday) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      .sort(
+        (a: Holiday, b: Holiday) =>
+          new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
   }, [countryCode, monthDate]);
 
-  const countryName = countries.find((country) => country.code === countryCode)?.name ?? countryCode;
+  const countryName =
+    countries.find((country) => country.code === countryCode)?.name ??
+    countryCode;
 
   return (
     <Container maxWidth="md" sx={{ py: { xs: 3, sm: 5 } }}>
@@ -129,12 +140,14 @@ function App() {
               {t('appTitle')}
             </Typography>
 
-            <Stack direction="row" spacing={1} alignItems="center"> {/* New Stack for theme toggle and language */}
+            <Stack direction="row" spacing={1} alignItems="center">
               <IconButton onClick={toggleTheme} color="inherit">
                 {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
               </IconButton>
               <FormControl size="small" sx={{ minWidth: 170 }}>
-                <InputLabel id="language-select-label">{t('language')}</InputLabel>
+                <InputLabel id="language-select-label">
+                  {t('language')}
+                </InputLabel>
                 <Select
                   labelId="language-select-label"
                   id="language-select"
@@ -155,11 +168,15 @@ function App() {
           <Autocomplete
             id="country-combobox"
             options={countries}
-            value={countries.find((country) => country.code === countryCode) ?? null}
+            value={
+              countries.find((country) => country.code === countryCode) ?? null
+            }
             onChange={(_, value) => setCountryCode(value?.code ?? '')}
             isOptionEqualToValue={(option, value) => option.code === value.code}
             getOptionLabel={(option) => `${option.name} (${option.code})`}
-            renderInput={(params) => <TextField {...params} label={t('country')} />}
+            renderInput={(params) => (
+              <TextField {...params} label={t('country')} />
+            )}
           />
 
           <Stack
@@ -177,7 +194,10 @@ function App() {
             <Typography component="strong" variant="h6" textAlign="center">
               {monthFormatter.format(monthDate)}
             </Typography>
-            <Button variant="contained" onClick={() => setMonthDate((value) => shiftMonth(value, 1))}>
+            <Button
+              variant="contained"
+              onClick={() => setMonthDate((value) => shiftMonth(value, 1))}
+            >
               {t('next')}
             </Button>
           </Stack>
@@ -194,7 +214,11 @@ function App() {
           ) : (
             <List disablePadding>
               {holidaysInMonth.map((holiday) => (
-                <ListItem key={`${holiday.date}-${holiday.name}`} divider sx={{ px: 0 }}>
+                <ListItem
+                  key={`${holiday.date}-${holiday.name}`}
+                  divider
+                  sx={{ px: 0 }}
+                >
                   <Stack
                     direction={{ xs: 'column', sm: 'row' }}
                     alignItems={{ xs: 'flex-start', sm: 'center' }}

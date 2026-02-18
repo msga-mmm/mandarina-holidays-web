@@ -48,7 +48,7 @@ export const lightTheme = createTheme({
       secondary: '#7A5A36'
     },
     divider: '#E0E0E0'
-  },
+  }
 });
 
 export const darkTheme = createTheme({
@@ -76,5 +76,5 @@ export const darkTheme = createTheme({
       secondary: '#BBBBBB'
     },
     divider: '#424242'
-  },
+  }
 });

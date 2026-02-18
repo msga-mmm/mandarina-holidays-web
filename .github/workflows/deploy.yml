@@ -15,6 +15,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  code-quality:
+    uses: ./.github/workflows/code-quality.yml
+
   build:
     runs-on: ubuntu-slim
     needs: code-quality

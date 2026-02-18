@@ -11,7 +11,9 @@ const resources = {
       previous: 'Previous',
       next: 'Next',
       holidaysInMonth: '{{country}} holidays in {{month}}',
-      noHolidays: 'No holidays found for this month.'
+      noHolidays: 'No holidays found for this month.',
+      switchToLightMode: 'Switch to light mode',
+      switchToDarkMode: 'Switch to dark mode'
     }
   },
   es: {
@@ -22,7 +24,9 @@ const resources = {
       previous: 'Anterior',
       next: 'Siguiente',
       holidaysInMonth: 'Festivos de {{country}} en {{month}}',
-      noHolidays: 'No se encontraron festivos para este mes.'
+      noHolidays: 'No se encontraron festivos para este mes.',
+      switchToLightMode: 'Cambiar a modo claro',
+      switchToDarkMode: 'Cambiar a modo oscuro'
     }
   },
   fr: {
@@ -33,7 +37,9 @@ const resources = {
       previous: 'Precedent',
       next: 'Suivant',
       holidaysInMonth: 'Jours feries de {{country}} en {{month}}',
-      noHolidays: 'Aucun jour ferie trouve pour ce mois.'
+      noHolidays: 'Aucun jour ferie trouve pour ce mois.',
+      switchToLightMode: 'Passer en mode clair',
+      switchToDarkMode: 'Passer en mode sombre'
     }
   }
 };

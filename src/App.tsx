@@ -141,7 +141,15 @@ function App() {
             </Typography>
 
             <Stack direction="row" spacing={1} alignItems="center">
-              <IconButton onClick={toggleTheme} color="inherit">
+              <IconButton
+                onClick={toggleTheme}
+                color="inherit"
+                aria-label={
+                  mode === 'dark'
+                    ? t('switchToLightMode')
+                    : t('switchToDarkMode')
+                }
+              >
                 {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
               </IconButton>
               <FormControl size="small" sx={{ minWidth: 170 }}>
